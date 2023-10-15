@@ -4,9 +4,11 @@ import * as z from "zod";
 import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { Loader2, PlusCircle } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { Chapter, Course } from "@prisma/client";
 
 import {
   Form,
@@ -16,10 +18,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { Loader2, PlusCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Chapter, Course } from "@prisma/client";
 import { Input } from "@/components/ui/input";
+
 import { ChaptersList } from "./chapters-list";
 
 interface ChaptersFormProps {
@@ -52,7 +53,7 @@ export const ChaptersForm = ({ initialData, courseId }: ChaptersFormProps) => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await axios.post(`/api/courses/${courseId}/chapters/reorder`, values);
+      await axios.post(`/api/courses/${courseId}/chapters`, values);
       toast.success("Chapter created");
       toggleCreating();
       router.refresh();
@@ -64,13 +65,14 @@ export const ChaptersForm = ({ initialData, courseId }: ChaptersFormProps) => {
   const onReorder = async (updateData: { id: string; position: number }[]) => {
     try {
       setIsUpdating(true);
+
       await axios.put(`/api/courses/${courseId}/chapters/reorder`, {
         list: updateData,
       });
       toast.success("Chapters reordered");
       router.refresh();
     } catch {
-      toast.error("Someting went wrong");
+      toast.error("Something went wrong");
     } finally {
       setIsUpdating(false);
     }
@@ -83,7 +85,7 @@ export const ChaptersForm = ({ initialData, courseId }: ChaptersFormProps) => {
   return (
     <div className="relative mt-6 border bg-slate-100 rounded-md p-4">
       {isUpdating && (
-        <div className="absolute h-full w-full bg-slate-500/20 top-0 right-0 rounded-md flex items-center justify-center">
+        <div className="absolute h-full w-full bg-slate-500/20 top-0 right-0 rounded-m flex items-center justify-center">
           <Loader2 className="animate-spin h-6 w-6 text-sky-700" />
         </div>
       )}
@@ -100,7 +102,6 @@ export const ChaptersForm = ({ initialData, courseId }: ChaptersFormProps) => {
           )}
         </Button>
       </div>
-
       {isCreating && (
         <Form {...form}>
           <form
@@ -144,8 +145,8 @@ export const ChaptersForm = ({ initialData, courseId }: ChaptersFormProps) => {
           />
         </div>
       )}
-      {isCreating && (
-        <p className="text-sm text-muted-foreground mt-4">
+      {!isCreating && (
+        <p className="text-xs text-muted-foreground mt-4">
           Drag and drop to reorder the chapters
         </p>
       )}
