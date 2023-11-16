@@ -6,6 +6,7 @@ import {
   File,
   LayoutDashboard,
   ListChecks,
+  BadgeIndianRupee,
 } from "lucide-react";
 import { redirect } from "next/navigation";
 import { TitleForm } from "./_components/title-form";
@@ -117,7 +118,7 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
             </div>
             <div>
               <div className="flex items-center gap-x-2">
-                <IconBadge icon={CircleDollarSign} />
+                <IconBadge icon={BadgeIndianRupee} />
                 <h2 className="text-xl">Sell your course</h2>
               </div>
               <PriceForm initialData={course} courseId={course.id} />
